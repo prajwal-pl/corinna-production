@@ -41,7 +41,7 @@ export default async function Home() {
             width={500}
             height={100}
             alt="Logo"
-            className="max-w-lg object-contain"
+            className="max-w-lg w-1/2 md:w-full object-contain"
           />
           <p className="text-center max-w-[500px]">
             Your AI powered sales assistant! Embed Corinna AI into any website
