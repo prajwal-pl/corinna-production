@@ -1,3 +1,4 @@
+"use client";
 import { useDomain } from "@/hooks/sidebar/use-domain";
 import { cn } from "@/lib/utils";
 import React from "react";

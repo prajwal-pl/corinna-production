@@ -1,6 +1,6 @@
 "use client";
 import { useThemeMode } from "@/hooks/settings/use-settings";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Section from "../section-label";
 import { cn } from "@/lib/utils";
 import { SystemMode } from "../themes-placeholder/systemmode";
@@ -11,6 +11,21 @@ type Props = {};
 
 const DarkModetoggle = (props: Props) => {
   const { setTheme, theme } = useThemeMode();
+  const [mounted, setMounted] = useState(false);
+
+  // Handle mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent hydration mismatch by rendering placeholder until mounted
+  if (!mounted) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+        {/* Placeholder content */}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
