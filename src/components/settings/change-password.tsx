@@ -12,7 +12,7 @@ const ChangePassword = (props: Props) => {
   const { register, errors, onChangePassword, loading } = useChangePassword();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 mb-10">
       <div className="lg:col-span-1">
         <Section label="Change Password" message="Reset your password" />
       </div>
