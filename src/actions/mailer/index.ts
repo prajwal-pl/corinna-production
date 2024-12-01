@@ -1,7 +1,7 @@
 "use server";
 import nodemailer from "nodemailer";
 
-export const onMailer = (email: string) => {
+export const onMailer = async (email: string) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,

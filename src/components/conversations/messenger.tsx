@@ -2,10 +2,10 @@
 import { useChatWindow } from "@/hooks/conversations/use-conversations";
 import React from "react";
 import { Loader } from "../loader";
-// import Bubble from '../chatbot/bubble'
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { PaperclipIcon } from "lucide-react";
+import Bubble from "../chatbot/bubble";
 
 type Props = {};
 
@@ -27,18 +27,17 @@ const Messenger = (props: Props) => {
             className="w-full flex-1 h-0 flex flex-col gap-3 pl-5 py-5 chat-window overflow-y-auto"
           >
             {chats.length ? (
-              <div></div>
+              chats.map((chat) => (
+                <Bubble
+                  key={chat.id}
+                  message={{
+                    role: chat.role!,
+                    content: chat.message,
+                  }}
+                  createdAt={chat.createdAt}
+                />
+              ))
             ) : (
-              //   chats.map((chat) => (
-              //     <Bubble
-              //       key={chat.id}
-              //       message={{
-              //         role: chat.role!,
-              //         content: chat.message,
-              //       }}
-              //       createdAt={chat.createdAt}
-              //     />
-              //   ))
               <div>No Chat Selected</div>
             )}
           </div>

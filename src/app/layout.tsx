@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: "Corinna AI",
   description:
     "Corinna AI is a chatbot platform that helps you automate your business",
+  icons: ["/images/logo-2.png"],
 };
 
 export default function RootLayout({

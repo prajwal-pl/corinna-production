@@ -5,11 +5,11 @@ import { extractEmailsFromString, extractURLfromString } from "@/lib/utils";
 import { onRealTimeChat } from "../conversation";
 import { clerkClient } from "@clerk/nextjs";
 import { onMailer } from "../mailer";
-// import OpenAi from 'openai'
+import Groq from "groq-sdk";
 
-// const openai = new OpenAi({
-//   apiKey: process.env.OPEN_AI_KEY,
-// })
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY!,
+});
 
 export const onStoreConversations = async (
   id: string,
@@ -205,167 +205,167 @@ export const onAiChatBotAssistant = async (
           author
         );
 
-        // const chatCompletion = await openai.chat.completions.create({
-        //   messages: [
-        //     {
-        //       role: 'assistant',
-        //       content: `
-        //       You will get an array of questions that you must ask the customer.
+        const chatCompletion = await groq.chat.completions.create({
+          messages: [
+            {
+              role: "assistant",
+              content: `
+              You will get an array of questions that you must ask the customer.
 
-        //       Progress the conversation using those questions.
+              Progress the conversation using those questions.
 
-        //       Whenever you ask a question from the array i need you to add a keyword at the end of the question (complete) this keyword is extremely important.
+              Whenever you ask a question from the array i need you to add a keyword at the end of the question (complete) this keyword is extremely important.
 
-        //       Do not forget it.
+              Do not forget it.
 
-        //       only add this keyword when your asking a question from the array of questions. No other question satisfies this condition
+              only add this keyword when your asking a question from the array of questions. No other question satisfies this condition
 
-        //       Always maintain character and stay respectfull.
+              Always maintain character and stay respectfull.
 
-        //       The array of questions : [${chatBotDomain.filterQuestions
-        //         .map((questions) => questions.question)
-        //         .join(', ')}]
+              The array of questions : [${chatBotDomain.filterQuestions
+                .map((questions) => questions.question)
+                .join(", ")}]
 
-        //       if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real user to continue the conversation. And add a keyword (realtime) at the end.
+              if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real user to continue the conversation. And add a keyword (realtime) at the end.
 
-        //       if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
-        //         checkCustomer?.customer[0].id
-        //       }
+              if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
+                checkCustomer?.customer[0].id
+              }
 
-        //       if the customer wants to buy a product redirect them to the payment page http://localhost:3000/portal/${id}/payment/${
-        //         checkCustomer?.customer[0].id
-        //       }
-        //   `,
-        //     },
-        //     ...chat,
-        //     {
-        //       role: 'user',
-        //       content: message,
-        //     },
-        //   ],
-        //   model: 'gpt-3.5-turbo',
-        // })
+              if the customer wants to buy a product redirect them to the payment page http://localhost:3000/portal/${id}/payment/${
+                checkCustomer?.customer[0].id
+              }
+          `,
+            },
+            ...chat,
+            {
+              role: "user",
+              content: message,
+            },
+          ],
+          model: "llama-3.2-90b-vision-preview",
+        });
 
-        // if (chatCompletion.choices[0].message.content?.includes('(realtime)')) {
-        //   const realtime = await client.chatRoom.update({
-        //     where: {
-        //       id: checkCustomer?.customer[0].chatRoom[0].id,
-        //     },
-        //     data: {
-        //       live: true,
-        //     },
-        //   })
+        if (chatCompletion.choices[0].message.content?.includes("(realtime)")) {
+          const realtime = await client.chatRoom.update({
+            where: {
+              id: checkCustomer?.customer[0].chatRoom[0].id,
+            },
+            data: {
+              live: true,
+            },
+          });
 
-        //   if (realtime) {
-        //     const response = {
-        //       role: 'assistant',
-        //       content: chatCompletion.choices[0].message.content.replace(
-        //         '(realtime)',
-        //         ''
-        //       ),
-        //     }
+          if (realtime) {
+            const response = {
+              role: "assistant",
+              content: chatCompletion.choices[0].message.content.replace(
+                "(realtime)",
+                ""
+              ),
+            };
 
-        //     await onStoreConversations(
-        //       checkCustomer?.customer[0].chatRoom[0].id!,
-        //       response.content,
-        //       'assistant'
-        //     )
+            await onStoreConversations(
+              checkCustomer?.customer[0].chatRoom[0].id!,
+              response.content,
+              "assistant"
+            );
 
-        //     return { response }
-        //   }
-        // }
-        // if (chat[chat.length - 1].content.includes('(complete)')) {
-        //   const firstUnansweredQuestion =
-        //     await client.customerResponses.findFirst({
-        //       where: {
-        //         customerId: checkCustomer?.customer[0].id,
-        //         answered: null,
-        //       },
-        //       select: {
-        //         id: true,
-        //       },
-        //       orderBy: {
-        //         question: 'asc',
-        //       },
-        //     })
-        //   if (firstUnansweredQuestion) {
-        //     await client.customerResponses.update({
-        //       where: {
-        //         id: firstUnansweredQuestion.id,
-        //       },
-        //       data: {
-        //         answered: message,
-        //       },
-        //     })
-        //   }
-        // }
+            return { response };
+          }
+        }
+        if (chat[chat.length - 1].content.includes("(complete)")) {
+          const firstUnansweredQuestion =
+            await client.customerResponses.findFirst({
+              where: {
+                customerId: checkCustomer?.customer[0].id,
+                answered: null,
+              },
+              select: {
+                id: true,
+              },
+              orderBy: {
+                question: "asc",
+              },
+            });
+          if (firstUnansweredQuestion) {
+            await client.customerResponses.update({
+              where: {
+                id: firstUnansweredQuestion.id,
+              },
+              data: {
+                answered: message,
+              },
+            });
+          }
+        }
 
-        // if (chatCompletion) {
-        //   const generatedLink = extractURLfromString(
-        //     chatCompletion.choices[0].message.content as string
-        //   )
+        if (chatCompletion) {
+          const generatedLink = extractURLfromString(
+            chatCompletion.choices[0].message.content as string
+          );
 
-        //   if (generatedLink) {
-        //     const link = generatedLink[0]
-        //     const response = {
-        //       role: 'assistant',
-        //       content: `Great! you can follow the link to proceed`,
-        //       link: link.slice(0, -1),
-        //     }
+          if (generatedLink) {
+            const link = generatedLink[0];
+            const response = {
+              role: "assistant",
+              content: `Great! you can follow the link to proceed`,
+              link: link.slice(0, -1),
+            };
 
-        //     await onStoreConversations(
-        //       checkCustomer?.customer[0].chatRoom[0].id!,
-        //       `${response.content} ${response.link}`,
-        //       'assistant'
-        //     )
+            await onStoreConversations(
+              checkCustomer?.customer[0].chatRoom[0].id!,
+              `${response.content} ${response.link}`,
+              "assistant"
+            );
 
-        //     return { response }
-        //   }
+            return { response };
+          }
 
-        //   const response = {
-        //     role: 'assistant',
-        //     content: chatCompletion.choices[0].message.content,
-        //   }
+          const response = {
+            role: "assistant",
+            content: chatCompletion.choices[0].message.content,
+          };
 
-        //   await onStoreConversations(
-        //     checkCustomer?.customer[0].chatRoom[0].id!,
-        //     `${response.content}`,
-        //     'assistant'
-        //   )
+          await onStoreConversations(
+            checkCustomer?.customer[0].chatRoom[0].id!,
+            `${response.content}`,
+            "assistant"
+          );
 
-        //   return { response }
-        // }
+          return { response };
+        }
       }
       console.log("No customer");
-      //   const chatCompletion = await openai.chat.completions.create({
-      //     messages: [
-      //       {
-      //         role: 'assistant',
-      //         content: `
-      //         You are a highly knowledgeable and experienced sales representative for a ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they havent provided all relevant information.
-      //         Right now you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: "assistant",
+            content: `
+              You are a highly knowledgeable and experienced sales representative for a ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they havent provided all relevant information.
+              Right now you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
 
-      //         Your next task is lead the conversation naturally to get the customers email address. Be respectful and never break character
+              Your next task is lead the conversation naturally to get the customers email address. Be respectful and never break character
 
-      //       `,
-      //       },
-      //       ...chat,
-      //       {
-      //         role: 'user',
-      //         content: message,
-      //       },
-      //     ],
-      //     model: 'gpt-3.5-turbo',
-      //   })
+            `,
+          },
+          ...chat,
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+        model: "llama-3.2-90b-vision-preview",
+      });
 
-      //   if (chatCompletion) {
-      //     const response = {
-      //       role: 'assistant',
-      //       content: chatCompletion.choices[0].message.content,
-      //     }
+      if (chatCompletion) {
+        const response = {
+          role: "assistant",
+          content: chatCompletion.choices[0].message.content,
+        };
 
-      //     return { response }
-      //   }
+        return { response };
+      }
     }
   } catch (error) {
     console.log(error);
