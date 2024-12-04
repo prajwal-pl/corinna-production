@@ -6,6 +6,7 @@ import { onRealTimeChat } from "../conversation";
 import { clerkClient } from "@clerk/nextjs";
 import { onMailer } from "../mailer";
 import Groq from "groq-sdk";
+import { validate as isUUID } from "uuid";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY!,
@@ -205,6 +206,15 @@ export const onAiChatBotAssistant = async (
           author
         );
 
+        const customerId = await checkCustomer?.customer[0]?.id;
+        if (!customerId || !isUUID(customerId)) {
+          throw new Error(`Invalid customer ID: ${customerId}`);
+        }
+
+        const baseUrl = "http://localhost:3000/portal";
+        const appointmentUrl = `${baseUrl}/${id}/appointment/${customerId}`;
+        const paymentUrl = `${baseUrl}/${id}/payment/${customerId}`;
+
         const chatCompletion = await groq.chat.completions.create({
           messages: [
             {
@@ -228,13 +238,9 @@ export const onAiChatBotAssistant = async (
 
               if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real user to continue the conversation. And add a keyword (realtime) at the end.
 
-              if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
-                checkCustomer?.customer[0].id
-              }
+              if the customer agrees to book an appointment send them this link ${appointmentUrl}
 
-              if the customer wants to buy a product redirect them to the payment page http://localhost:3000/portal/${id}/payment/${
-                checkCustomer?.customer[0].id
-              }
+              if the customer wants to buy a product redirect them to the payment page ${paymentUrl}
           `,
             },
             ...chat,
