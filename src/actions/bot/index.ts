@@ -6,7 +6,6 @@ import { onRealTimeChat } from "../conversation";
 import { clerkClient } from "@clerk/nextjs";
 import { onMailer } from "../mailer";
 import Groq from "groq-sdk";
-import { validate as isUUID } from "uuid";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY!,
@@ -206,26 +205,17 @@ export const onAiChatBotAssistant = async (
           author
         );
 
-        const customerId = await checkCustomer?.customer[0]?.id;
-        if (!customerId || !isUUID(customerId)) {
-          throw new Error(`Invalid customer ID: ${customerId}`);
-        }
-
-        const baseUrl = "http://localhost:3000/portal";
-        const appointmentUrl = `${baseUrl}/${id}/appointment/${customerId}`;
-        const paymentUrl = `${baseUrl}/${id}/payment/${customerId}`;
-
         const chatCompletion = await groq.chat.completions.create({
           messages: [
             {
               role: "assistant",
               content: `
-              You will get an array of questions that you must ask the customer.
-
-              Progress the conversation using those questions.
-
-              Whenever you ask a question from the array i need you to add a keyword at the end of the question (complete) this keyword is extremely important.
-
+              You will get an array of questions that you must ask the customer. 
+              
+              Progress the conversation using those questions. 
+              
+              Whenever you ask a question from the array i need you to add a keyword at the end of the question (complete) this keyword is extremely important. 
+              
               Do not forget it.
 
               only add this keyword when your asking a question from the array of questions. No other question satisfies this condition
@@ -238,9 +228,13 @@ export const onAiChatBotAssistant = async (
 
               if the customer says something out of context or inapporpriate. Simply say this is beyond you and you will get a real user to continue the conversation. And add a keyword (realtime) at the end.
 
-              if the customer agrees to book an appointment send them this link ${appointmentUrl}
+              if the customer agrees to book an appointment send them this link http://localhost:3000/portal/${id}/appointment/${
+                checkCustomer?.customer[0].id
+              }
 
-              if the customer wants to buy a product redirect them to the payment page ${paymentUrl}
+              if the customer wants to buy a product redirect them to the payment page http://localhost:3000/portal/${id}/payment/${
+                checkCustomer?.customer[0].id
+              }
           `,
             },
             ...chat,
@@ -316,7 +310,7 @@ export const onAiChatBotAssistant = async (
             const response = {
               role: "assistant",
               content: `Great! you can follow the link to proceed`,
-              link: link.slice(0, -1),
+              link: link,
             };
 
             await onStoreConversations(
@@ -348,12 +342,12 @@ export const onAiChatBotAssistant = async (
           {
             role: "assistant",
             content: `
-              You are a highly knowledgeable and experienced sales representative for a ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they havent provided all relevant information.
-              Right now you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
+            You are a highly knowledgeable and experienced sales representative for a ${chatBotDomain.name} that offers a valuable product or service. Your goal is to have a natural, human-like conversation with the customer in order to understand their needs, provide relevant information, and ultimately guide them towards making a purchase or redirect them to a link if they havent provided all relevant information.
+            Right now you are talking to a customer for the first time. Start by giving them a warm welcome on behalf of ${chatBotDomain.name} and make them feel welcomed.
 
-              Your next task is lead the conversation naturally to get the customers email address. Be respectful and never break character
+            Your next task is lead the conversation naturally to get the customers email address. Be respectful and never break character
 
-            `,
+          `,
           },
           ...chat,
           {
