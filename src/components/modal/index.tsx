@@ -35,22 +35,14 @@ const Modal = ({
           <DialogContent>
             <div className="flex justify-center gap-3">
               <div className="w-12 h-12 relative">
-                <Image
-                  src={`https://ucarecdn.com/2c9bd4ab-1f00-41df-bad2-df668f65a232/`}
-                  fill
-                  alt="Corinna"
-                />
+                <Image src={`/images/logo-2.png`} fill alt="Corinna" />
               </div>
               <div className="text-gray-400">
                 <ArrowLeft size={20} />
                 <ArrowRight size={20} />
               </div>
               <div className="w-12 h-12 relative">
-                <Image
-                  src={`https://ucarecdn.com/${logo}/`}
-                  fill
-                  alt="Stripe"
-                />
+                <Image src={`/images/stripe-logo.jpeg`} fill alt="Stripe" />
               </div>
             </div>
             <DialogHeader className="flex items-center">

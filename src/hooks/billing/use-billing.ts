@@ -19,15 +19,13 @@ export const useStripe = () => {
   const onStripeConnect = async () => {
     try {
       setOnStripeAccountPending(true);
-      const account = await axios.get(`/api/stripe/connect`);
-      if (account) {
-        setOnStripeAccountPending(false);
-        if (account) {
-          window.location.href = account.data.url;
-        }
-      }
+
+      // Redirect to Stripe Connect OAuth
+      window.location.href = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${process
+        .env.NEXT_PUBLIC_STRIPE_CLIENT_ID!}&scope=read_write`;
     } catch (error) {
-      console.log(error);
+      console.error("Stripe Connect error:", error);
+      setOnStripeAccountPending(false);
     }
   };
   return { onStripeConnect, onStripeAccountPending };

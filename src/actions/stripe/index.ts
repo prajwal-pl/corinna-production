@@ -18,6 +18,7 @@ export const onCreateCustomerPaymentIntentSecret = async (
       {
         currency: "usd",
         amount: amount * 100,
+        description: "subscription services",
         automatic_payment_methods: {
           enabled: true,
         },
@@ -25,7 +26,18 @@ export const onCreateCustomerPaymentIntentSecret = async (
       { stripeAccount: stripeId }
     );
 
-    if (paymentIntent) {
+    const customer = await stripe.customers.create({
+      name: "Jenny Rosen",
+      address: {
+        line1: "510 Townsend St",
+        postal_code: "98140",
+        city: "San Francisco",
+        state: "CA",
+        country: "US",
+      },
+    });
+
+    if (paymentIntent && customer) {
       return { secret: paymentIntent.client_secret };
     }
   } catch (error) {

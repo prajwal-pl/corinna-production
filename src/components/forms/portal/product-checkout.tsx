@@ -29,6 +29,10 @@ const PaymentCheckout = ({
   products,
   stripeId,
 }: Props) => {
+  if (!stripeId) {
+    return <div>Missing Stripe account configuration</div>;
+  }
+
   const StripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISH_KEY!,
     {
