@@ -78,7 +78,7 @@ export const useCompleteCustomerPayment = (onNext: () => void) => {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: "http://localhost:3000/settings",
+          return_url: "https://corinna-production.vercel.app/settings",
         },
         redirect: "if_required",
       });
@@ -182,7 +182,7 @@ export const useCompletePayment = (
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: "http://localhost:3000/settings",
+          return_url: "https://corinna-production.vercel.app/settings",
         },
         redirect: "if_required",
       });
