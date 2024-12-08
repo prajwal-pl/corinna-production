@@ -14,11 +14,20 @@ export const onCreateCustomerPaymentIntentSecret = async (
   stripeId: string
 ) => {
   try {
+    if (!stripeId) {
+      stripeId = uuidv4();
+    }
     const paymentIntent = await stripe.paymentIntents.create(
       {
-        currency: "usd",
+        customer: stripeId,
+        currency: "INR",
         amount: amount * 100,
         description: "subscription services",
+        statement_descriptor: "Corinna Services",
+        metadata: {
+          amount: amount,
+          type: "subscription",
+        },
         automatic_payment_methods: {
           enabled: true,
         },
