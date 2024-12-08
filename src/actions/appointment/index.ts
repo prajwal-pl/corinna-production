@@ -2,7 +2,6 @@
 
 import { client } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs";
-import { validate as isUUID } from "uuid";
 
 export const onDomainCustomerResponses = async (customerId: string) => {
   try {

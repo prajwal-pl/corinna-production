@@ -14,9 +14,6 @@ export const onCreateCustomerPaymentIntentSecret = async (
   stripeId: string
 ) => {
   try {
-    if (!stripeId) {
-      stripeId = uuidv4();
-    }
     const paymentIntent = await stripe.paymentIntents.create(
       {
         customer: stripeId,

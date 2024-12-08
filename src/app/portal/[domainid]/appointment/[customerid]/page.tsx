@@ -6,14 +6,15 @@ import PortalForm from "@/components/forms/portal/portal-form";
 import React from "react";
 
 type Props = {
-  params: {
+  params: Promise<{
     domainid: string;
     customerid: string;
-  };
+  }>;
 };
 const CustomerSignUpForm = async ({ params }: Props) => {
-  const questions = await onDomainCustomerResponses(params.customerid);
-  const bookings = await onGetAllDomainBookings(params.domainid);
+  const { domainid, customerid } = await params;
+  const questions = await onDomainCustomerResponses(customerid);
+  const bookings = await onGetAllDomainBookings(domainid);
 
   console.log(questions);
 
@@ -23,8 +24,8 @@ const CustomerSignUpForm = async ({ params }: Props) => {
     <PortalForm
       bookings={bookings}
       email={questions.email!}
-      domainid={params.domainid}
-      customerId={params.customerid}
+      domainid={domainid}
+      customerId={customerid}
       questions={questions.questions}
       type="Appointment"
     />

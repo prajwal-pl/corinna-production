@@ -11,7 +11,6 @@ import { PlanUsage } from "@/components/dashboard/plan-usage";
 import InfoBar from "@/components/infobar";
 import { Separator } from "@/components/ui/separator";
 import CalIcon from "@/icons/cal";
-import EmailIcon from "@/icons/email-icon";
 import PersonIcon from "@/icons/person-icon";
 import { TransactionsIcon } from "@/icons/transaction-icon";
 import { DollarSign } from "lucide-react";

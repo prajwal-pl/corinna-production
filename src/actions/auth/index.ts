@@ -30,6 +30,7 @@ export const onCompleteUserRegistration = async (
       return { status: 200, user: registered };
     }
   } catch (error) {
+    console.log(error);
     return { status: 400 };
   }
 };
@@ -54,6 +55,7 @@ export const onLoginUser = async () => {
         return { status: 200, user: authenticated, domain: domains?.domains };
       }
     } catch (error) {
+      console.log(error);
       return { status: 400 };
     }
   }
