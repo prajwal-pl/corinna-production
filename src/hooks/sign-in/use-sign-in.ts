@@ -32,7 +32,7 @@ export const useSignInForm = () => {
             title: "Success",
             description: "Welcome back!",
           });
-          window.location.href = "/dashboard";
+          router.push("/dashboard");
         }
       } catch (error: any) {
         setLoading(false);
