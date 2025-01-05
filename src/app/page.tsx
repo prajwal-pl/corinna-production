@@ -36,7 +36,7 @@ export default async function Home() {
             with just a snippet of code!
           </p>
           <Button className="bg-orange font-bold text-white px-4">
-            Start For Free
+            <Link href="/dashboard">Start For Free</Link>
           </Button>
           <Image
             src="/images/iphonecorinna.png"

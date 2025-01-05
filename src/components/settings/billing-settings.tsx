@@ -18,6 +18,7 @@ const BillingSettings = async (props: Props) => {
   if (!planFeatures) return;
 
   console.log(planFeatures);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
       <div className="lg:col-span-1">
@@ -54,6 +55,14 @@ const BillingSettings = async (props: Props) => {
         >
           <SubscriptionForm plan={plan!} />
         </Modal>
+        {plan && (
+          <Image
+            src="/images/creditcard.png"
+            width={400}
+            height={400}
+            alt="image"
+          />
+        )}
       </div>
       <div className="lg:col-span-2">
         <h3 className="text-xl font-semibold mb-2">Current Plan</h3>

@@ -1,12 +1,12 @@
 "use server";
 
 import { client } from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET!, {
   typescript: true,
-  apiVersion: "2024-11-20.acacia",
+  apiVersion: "2024-12-18.acacia",
 });
 
 export const onCreateCustomerPaymentIntentSecret = async (
@@ -14,13 +14,32 @@ export const onCreateCustomerPaymentIntentSecret = async (
   stripeId: string
 ) => {
   try {
+    const user = await currentUser();
+    const paymentMethod = await stripe.paymentMethods.create({
+      type: "card",
+      billing_details: {
+        address: {
+          city: "Bangalore",
+          country: "IN",
+          line1: "",
+          line2: "",
+          postal_code: "560074",
+          state: "KN",
+        },
+        email: user?.emailAddresses[0].emailAddress,
+        name: user?.firstName,
+      },
+    });
+
     const paymentIntent = await stripe.paymentIntents.create(
       {
         customer: stripeId,
+        // payment_method_types: ["card"],
         currency: "INR",
         amount: amount * 100,
         description: "subscription services",
         statement_descriptor: "Corinna Services",
+        payment_method: paymentMethod.id,
         metadata: {
           amount: amount,
           type: "subscription",
@@ -33,13 +52,13 @@ export const onCreateCustomerPaymentIntentSecret = async (
     );
 
     const customer = await stripe.customers.create({
-      name: "Jenny Rosen",
+      name: "Prajwal PL",
       address: {
-        line1: "510 Townsend St",
-        postal_code: "98140",
-        city: "San Francisco",
-        state: "CA",
-        country: "US",
+        line1: "",
+        postal_code: "560074",
+        city: "Bangalore",
+        state: "KN",
+        country: "IN",
       },
     });
 
@@ -105,13 +124,37 @@ export const onGetStripeClientSecret = async (
   item: "STANDARD" | "PRO" | "ULTIMATE"
 ) => {
   try {
+    const user = await currentUser();
+    const paymentMethod = await stripe.paymentMethods.create({
+      type: "card",
+      card: {
+        token: "tok_visa",
+      },
+      billing_details: {
+        address: {
+          city: "Bangalore",
+          country: "IN",
+          line1: "",
+          line2: "",
+          postal_code: "560074",
+          state: "KN",
+        },
+        phone: "1234567890",
+        email: user?.emailAddresses[0].emailAddress,
+        name: user?.firstName,
+      },
+    });
+
     const amount = setPlanAmount(item);
     const paymentIntent = await stripe.paymentIntents.create({
-      currency: "usd",
-      amount: amount,
       automatic_payment_methods: {
         enabled: true,
       },
+      currency: "INR",
+      amount: amount,
+      // payment_method_types: ["card"],
+      payment_method: paymentMethod.id,
+      description: "subscription services",
     });
 
     if (paymentIntent) {
