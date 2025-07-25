@@ -243,7 +243,7 @@ export const onAiChatBotAssistant = async (
               content: message,
             },
           ],
-          model: "llama-3.2-90b-vision-preview",
+          model: process.env.MODEL_NAME!,
         });
 
         if (chatCompletion.choices[0].message.content?.includes("(realtime)")) {
@@ -355,7 +355,7 @@ export const onAiChatBotAssistant = async (
             content: message,
           },
         ],
-        model: "llama-3.2-90b-vision-preview",
+        model: process.env.MODEL_NAME!,
       });
 
       if (chatCompletion) {

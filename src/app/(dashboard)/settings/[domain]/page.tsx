@@ -21,14 +21,14 @@ const DomainSettingsPage = async ({ params }: Props) => {
       <div className="overflow-y-auto w-full chat-window flex-1 h-0 pl-2 pr-4 ">
         <SettingsForm
           plan={domainInfo.subscription?.plan!}
-          chatBot={domainInfo.domains[0].chatBot}
-          id={domainInfo.domains[0].id}
-          name={domainInfo.domains[0].name}
+          chatBot={domainInfo.domains[0]?.chatBot}
+          id={domainInfo.domains[0]?.id}
+          name={domainInfo.domains[0]?.name}
         />
         <BotTrainingForm id={domainInfo.domains[0].id} />
         <ProductTable
-          id={domainInfo.domains[0].id}
-          products={domainInfo.domains[0].products || []}
+          id={domainInfo.domains[0]?.id}
+          products={domainInfo.domains[0]?.products || []}
         />
       </div>
     </>

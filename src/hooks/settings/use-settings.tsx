@@ -137,7 +137,7 @@ export const useSettings = (id: string) => {
         description: deleted.message,
       });
       setDeleting(false);
-      router.refresh();
+      router.push("/dashboard");
     }
   };
   return {
