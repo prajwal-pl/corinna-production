@@ -15,17 +15,25 @@ export const onCreateCustomerPaymentIntentSecret = async (
 ) => {
   try {
     const user = await currentUser();
+
+    await stripe.customers.update(stripeId, {
+      name: user?.firstName || "Test user",
+      email: user?.emailAddresses[0].emailAddress || "test@example.com",
+      address: {
+        line1: "Line 1",
+        city: "Bangalore",
+        state: "KA",
+        postal_code: "560074",
+        country: "IN",
+      },
+    });
+
     const paymentMethod = await stripe.paymentMethods.create({
       type: "card",
+      card: {
+        token: "tok_visa",
+      },
       billing_details: {
-        address: {
-          city: "Bangalore",
-          country: "IN",
-          line1: "",
-          line2: "",
-          postal_code: "560074",
-          state: "KN",
-        },
         email: user?.emailAddresses[0].emailAddress,
         name: user?.firstName,
       },
@@ -35,8 +43,8 @@ export const onCreateCustomerPaymentIntentSecret = async (
       {
         customer: stripeId,
         // payment_method_types: ["card"],
-        currency: "INR",
-        amount: amount * 100,
+        currency: "inr",
+        amount: Math.round(amount * 100),
         description: "subscription services",
         statement_descriptor: "Corinna Services",
         payment_method: paymentMethod.id,
@@ -46,6 +54,16 @@ export const onCreateCustomerPaymentIntentSecret = async (
         },
         automatic_payment_methods: {
           enabled: true,
+        },
+        shipping: {
+          name: user?.firstName || "Test User",
+          address: {
+            line1: "Line 1",
+            city: "Bangalore",
+            state: "KA",
+            postal_code: "560074",
+            country: "IN",
+          },
         },
       },
       { stripeAccount: stripeId }
@@ -150,8 +168,18 @@ export const onGetStripeClientSecret = async (
       automatic_payment_methods: {
         enabled: true,
       },
-      currency: "INR",
+      currency: "inr",
       amount: amount,
+      shipping: {
+        name: user?.firstName ?? "Test User",
+        address: {
+          line1: "Line 1",
+          city: "Bangalore",
+          state: "KA",
+          postal_code: "560074",
+          country: "IN",
+        },
+      },
       // payment_method_types: ["card"],
       payment_method: paymentMethod.id,
       description: "subscription services",
